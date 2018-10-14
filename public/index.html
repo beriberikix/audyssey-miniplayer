@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audyssey mini player</title>
+</head>
+
+<body>
+  <div>Input URL to make into a podcast</div><br>
+  <input type="text" id="url" style="width: 600px" value="https://www.capriza.com/new-study-reveals-finance-leaders-expect-immediate-benefit-from-digital-transformation/"><br>
+  <div>Pick language, gender</div><br>
+  <select name="languages" id="lang">
+      <option value="">--Please choose an language--</option>
+  </select><br>
+  <button id="btn">Generate Podcast</button><br>
+
+  <!-- <iframe src="https://try.capriza.com/api/play?s=https://www.capriza.com/new-study-reveals-finance-leaders-expect-immediate-benefit-from-digital-transformation/" frameborder="0"></iframe> -->
+  <iframe src="" frameborder="0" id="player"></iframe>
+
+  <script>
+      const input = document.getElementById("url");
+      const select = document.getElementById('lang');
+      const voices = './wavenet-voices.json';
+      const btn = document.getElementById("btn");
+      const ifr = document.getElementById('player');
+  
+      btn.onclick = generate;
+  
+      fetch(voices)
+        .then((resp) => resp.json())
+        .then(function (languages) {
+          for( var langNumber in languages.voices){
+            // console.log(languages.voices[langNumber]);
+            let lang = languages.voices[langNumber];
+            let opt = document.createElement("option");
+            opt.value = lang.name;
+            opt.setAttribute('data-lang', lang.languageCodes[0]);
+            opt.text = lang.name + ' ' + lang.ssmlGender;
+            document.getElementById('lang').appendChild(opt);
+          }
+        });
+  
+        function generate(event) {
+          let baseURL = "https://try.capriza.com/api/play?s=";
+          console.log(input.value);
+          console.log(select.options[select.selectedIndex].value);
+          console.log(select.options[select.selectedIndex].dataset.lang);
+          console.log(baseURL + input.value + '&l=' +  select.options[select.selectedIndex].dataset.lang + '&v=' + select.options[select.selectedIndex].value);
+          ifr.src = baseURL + input.value + '&l=' +  select.options[select.selectedIndex].dataset.lang + '&v=' + select.options[select.selectedIndex].value;
+        }
+    </script>
+</body>
+
+</html>
